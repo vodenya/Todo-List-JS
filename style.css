@@ -1,0 +1,192 @@
+* {padding: 0;margin: 0;border: 0; font-family: Arial,sans-serif;}
+*,*::before,*::after{box-sizing: border-box;}
+:focus,:active{outline: none;}
+a:focus,a:active{outline: none;}
+html,body{height: 100%;font-size: 100%;line-height: 1;font-size: 14px;}
+input,button,textarea{font-family: Arial,sans-serif;}
+button{cursor: pointer;}
+a,a:visited{text-decoration: none;}
+a:hover{text-decoration: none;}
+ul li{list-style: none;}
+img{vertical-align: top;}
+h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: inherit;} 
+
+body {
+   height: 1vh;
+   background-image: url(https://img5.goodfon.ru/wallpaper/nbig/5/b7/osen-listia-fon-colorful-klen-wood-autumn-leaves-cup-noteboo.jpg);
+   background-size: cover;
+   background-attachment:fixed;
+   background-position: center;
+   background-repeat: no-repeat;
+}
+
+h2 {
+   display: block;
+   text-align: center;
+   font-size: 1.5em;
+   margin-block-start: 0.83em;
+   margin-block-end: 0.83em;
+   margin-inline-start: 0px;
+   margin-inline-end: 0px;
+   font-weight: bold;
+}
+
+.message {
+   padding: 20px;
+   display: grid;
+   justify-items: center;
+   align-items: center;
+   line-height: 30px;
+   color: grey;
+   font-weight: 700;
+}
+
+.container {
+   position: relative;
+   margin: 60px auto 30px auto;
+   padding: 20px;
+   font-size: 18px;
+   color: #2c3e50;
+   width: 60%;
+   border-radius: 5px;
+   background-color: rgb(247, 247, 247);
+}
+
+.task {
+   display: grid;
+   grid-template-columns: 40px auto 40px;
+   grid-gap: 15px;
+   justify-items: baseline;
+   align-items: center;
+   margin-bottom: 20px;
+}
+
+.task a {
+   width: 25px;
+   height: 25px;
+   border: 1px solid #7fffd4;
+   border-radius: 50%;
+   cursor: pointer;
+}
+
+.task a:hover {
+   background: #7fffd450;
+}
+
+.task.checked {
+   text-decoration: line-through;
+}
+
+.task.checked a {
+   background: #7fffd4;
+   border: 1px solid #6cdcb6;
+   background: url()"
+}
+
+.close-image img {
+   display: block;
+   height: 20px;  
+   width: 19px;
+   background-color: rgb(247, 247, 247);
+   pointer-events: none;
+}
+
+.new-task {
+   width: calc(100% - 120px);
+   font-size: 18px;
+   margin-left: 55px;
+   padding: 1px 5px;
+   border: none;
+   border-bottom: 1px dashed #d3d3d3;
+   color: rgb(182, 182, 182);
+   background-color: rgb(247, 247, 247);
+}
+
+.summary {
+   display: grid;
+   grid-template-columns: auto max-content;
+   font-size: 14px;
+   grid-gap: 10px;
+   margin: 20px 0;
+}
+
+.hr {
+   border: none;
+   border-bottom: 1px solid #d3d3d3;
+}
+
+.status {
+   font-size: 14px;
+}
+
+.red {
+   color: red;
+}
+
+.orange {
+   color: rgb(255, 174, 0);
+}
+
+.green {
+   color: rgb(0, 216, 0);
+}
+
+.delete-modal-overlay {
+   background: rgba(0, 0, 0, 0.35);
+   z-index: 100;
+   position: absolute;
+   top: 0;
+   left: 0;
+   bottom: 0;
+   right: 0;
+}
+
+.delete-modal {
+   position: absolute;
+   border: 1px solid #d3d3d3;
+   border-radius: 5px;
+   background: #fff;
+   padding: 30px;
+   display: grid;
+   grid-template-rows: auto min-content;
+   -webkit-box-shadow: 0 0 1px 2px #eee;
+   box-shadow: 0 0 1px 2px #eee;
+   left: 22%;
+   top: 33%;
+   z-index: 101;
+}
+
+.display-none {
+   display: none;
+}
+
+.buttons {
+   margin-top: 20px;
+   display: grid;
+   grid-template-columns: min-content min-content;
+   grid-gap: 20px;
+   -webkit-box-pack: center;
+   -ms-flex-pack: center;
+   justify-content: center;
+}
+
+.buttons button {
+   padding: 5px;
+   border: 1px solid #d3d3d3;
+   border-radius: 2px;
+   min-width: 50px;
+   font-size: 16px;
+   cursor: pointer;
+}
+
+footer {
+   position: absolute;
+   bottom: 10px;
+   right: 10px;
+}
+
+footer,
+footer a{
+   color: #fff;
+   font-size: 12px;
+}
