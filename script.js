@@ -20,7 +20,8 @@ addForm.addEventListener("submit", addTodo);
 checkButton.addEventListener('click', deleteOrMarkCheck);
 checkButton.addEventListener('click', editIncomplicateTask);
 
-function addTodo() {
+function addTodo(e) {
+    e.preventDefault();
     let newTask = addInput.value,
     obj = {};
 
