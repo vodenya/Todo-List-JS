@@ -3,6 +3,13 @@ const addForm = document.querySelector("form.add-task"),
       message = document.querySelector(".message"),
       checkButton = document.querySelector('.tasks');
 
+const shareBtn = document.querySelector('.share-btn'),
+      telegramBtn = document.querySelector('.telegram-btn'),
+      facebookBtn = document.querySelector('.facebook-btn'),
+      linkedinBtn = document.querySelector('.linkedin-btn'),
+      whatsappBtn = document.querySelector('.whatsapp-btn'),
+      twitterBtn = document.querySelector('.twitter-btn');
+
 let todoListArr = [],
     incomplNum = 0,
     complNum = 0,
@@ -11,21 +18,21 @@ let todoListArr = [],
 document.addEventListener('DOMContentLoaded', getDataOnReboot);
 addForm.addEventListener("submit", addTodo);
 checkButton.addEventListener('click', deleteOrMarkCheck);
+checkButton.addEventListener('click', editIncomplicateTask);
 
-function addTodo(event) {
-    event.preventDefault();
-
+function addTodo() {
     let newTask = addInput.value,
     obj = {};
+
+    if(newTask) {
     obj.id = new Date().getTime();
     obj.todo = newTask;
     obj.checked = false;
-    obj.editing = false;
+    obj.edited = false;
 
     let i = todoListArr.length;
     todoListArr[i] = obj;
     
-    if(newTask) {
         createTask(obj);
         saveTodosInLocalStorage(obj);
     }
@@ -41,6 +48,7 @@ function createTask(task, checkTrue) {
         <span>${task.todo}</span>
         <button class="close-image"><img src="https://icons-for-free.com/iconfiles/png/512/delete+remove+trash+trash+bin+trash+can+icon-1320073117929397588.png"></button>
     `;
+    el.childNodes[3].setAttribute("contenteditable", false);
     message.innerHTML = "";
     addInput.value = '';
 
@@ -114,6 +122,7 @@ function deleteOrMarkCheck(e) {
             addForm.before(newItem);
         } else {
             newItem.classList.toggle('checked');
+            newItem.childNodes[3].setAttribute("contenteditable", false);
             document.querySelector(".summary").after(newItem);
         }
         checkedTaskInLocalStorage(newItem.id);
@@ -141,6 +150,7 @@ function createModalWindow(e) {
         </div>
     `;
     document.querySelector('.tasks h2').after(modal);
+    document.body.style.overflow = 'hidden';
 }
 
 function checkDeleteModalButtons(eventTask) {
@@ -152,14 +162,63 @@ function checkDeleteModalButtons(eventTask) {
 
         if (eventBtn.target.innerHTML === 'No') {
             eventModal.remove();
+            document.body.style.overflow = '';
         } else if (eventBtn.target.innerHTML === 'Yes') {
             eventModal.remove();
             todoTask.remove();
+            document.body.style.overflow = '';
             removeTodosFromLocalStorage(todoTask.id);
             checkCompleteSummary();
         }
     });
 }
+
+function editIncomplicateTask(e) {
+    const item = e.target.parentElement;
+    let newTodo;
+    
+    if (item && item.childNodes[3] && item.childNodes[3].tagName == 'SPAN' && !item.classList.contains('checked')) {
+        item.childNodes[3].setAttribute("contenteditable", true);
+        
+        item.addEventListener('focusout', () => {
+            newTodo = item.childNodes[3].textContent;
+            editedTaskInLocalStorage(item.id, newTodo);
+        });
+    }
+
+}
+
+// Social icons share
+function socialIonsShare() {
+    let postUrl = encodeURI(document.location.href);
+    let postTitle = encodeURI(`Hello! This is my first project on JavaScript: `);
+
+    shareBtn.addEventListener('click', () => {
+
+    });
+    telegramBtn.setAttribute(
+        "href", 
+        `https://t.me/share/url?url=${postUrl}&title=${postTitle}`
+    );
+    facebookBtn.setAttribute(
+        "href", 
+        `https://www.facebook.com/sharer.php?u=${postUrl}`
+    );
+    linkedinBtn.setAttribute(
+        "href", 
+        `https://www.linkedin.com/shareArticle?url=${postUrl}&title=${postTitle}`
+    );
+    whatsappBtn.setAttribute(
+        "href", 
+        `https://api.whatsapp.com/send?text=${postTitle} ${postUrl}`
+    );
+    twitterBtn.setAttribute(
+        "href", 
+        `https://twitter.com/share?url=${postUrl}&text=${postTitle}`
+    );
+}
+
+
 
 // localStorage
 function saveTodosInLocalStorage(todoArr) {
@@ -201,10 +260,23 @@ function complNumLocalStorage() {
 
 function checkedTaskInLocalStorage(taskId) {
     checkArrayLocalStorage();
-    const removeIndex = todoListArr.findIndex(item => {return item.id == taskId;});
+    const checkIndex = todoListArr.findIndex(item => {return item.id == taskId;});
 
-    todoListArr[removeIndex].checked = !todoListArr[removeIndex].checked;
+    todoListArr[checkIndex].checked = !todoListArr[checkIndex].checked;
     todoListArr.sort((a, b) => {return a.checked - b.checked;});
+    pushDatasInLocalStorage();
+}
+
+function editedTaskInLocalStorage(taskId, newTodo) {
+    checkArrayLocalStorage();
+
+    todoListArr.forEach((item, index) => {
+        if (item.id != taskId) {
+            return;
+        }
+        todoListArr[index].todo = newTodo;
+        todoListArr[index].edited = true;
+    });
     pushDatasInLocalStorage();
 }
 
@@ -242,4 +314,5 @@ function getDataOnReboot(e) {
         }
     });
     addSummaryClassList();
+    socialIonsShare();
 }
