@@ -1,9 +1,12 @@
 const addForm = document.querySelector("form.add-task"),
       addInput = document.querySelector(".new-task"),
       message = document.querySelector(".message"),
-      checkButton = document.querySelector('.tasks');
+      uncheckedCont = document.querySelector('.unchecked-container'),
+      checkedCont = document.querySelector('.checked-container'),
+      checkButton = document.querySelector('.tasks'),
+      deleteAll = document.querySelector('.delete-button');
 
-const shareBtn = document.querySelector('.share-btn'),
+const shareBtn = document.querySelector('.share-btn-url'),
       telegramBtn = document.querySelector('.telegram-btn'),
       facebookBtn = document.querySelector('.facebook-btn'),
       linkedinBtn = document.querySelector('.linkedin-btn'),
@@ -16,9 +19,11 @@ let todoListArr = [],
     complPercent = 0;
 
 document.addEventListener('DOMContentLoaded', getDataOnReboot);
+shareBtn.addEventListener('click', shareURL);
 addForm.addEventListener("submit", addTodo);
 checkButton.addEventListener('click', deleteOrMarkCheck);
 checkButton.addEventListener('click', editIncomplicateTask);
+deleteAll.addEventListener('click', deleteAllTasks);
 
 function addTodo(e) {
     e.preventDefault();
@@ -55,11 +60,12 @@ function createTask(task, checkTrue) {
 
     if (checkTrue) {
         el.classList.add("checked");
-        document.querySelector(".summary").after(el);
+        checkedCont.prepend(el);
         complNum++;
     } else {
-        addForm.before(el);
+        uncheckedCont.append(el);
     }
+    updateURLFromLocalStorage();
     checkCompleteSummary();
 }
 
@@ -117,14 +123,16 @@ function deleteOrMarkCheck(e) {
     const newItem = item.parentElement;
 
     // Check task
-    if (item.tagName == 'A') {
+    if (item && item.tagName == 'A') {
         if(newItem.classList.contains('checked')) {
             newItem.classList.remove('checked');
-            addForm.before(newItem);
+            newItem.childNodes[3].classList.remove('checked');
+            uncheckedCont.append(newItem);
         } else {
             newItem.classList.toggle('checked');
             newItem.childNodes[3].setAttribute("contenteditable", false);
-            document.querySelector(".summary").after(newItem);
+            newItem.childNodes[3].classList.add('checked');
+            checkedCont.prepend(newItem);
         }
         checkedTaskInLocalStorage(newItem.id);
     // Delete task
@@ -138,18 +146,27 @@ function deleteOrMarkCheck(e) {
 function createModalWindow(e) {
     const item = e.target.parentElement;
     const modal = document.createElement("div");
-    
+
     modal.classList.add("delete-modal-overlay");
     modal.innerHTML = `
         <div class="delete-modal">
             <div>Are you sure you want to delete task
-                <span>"${item.children[1].innerText}"?</span>
+                <span>"${item.children[1].innerText}"</span>
+                ?
             </div>
             <div class="buttons">
                 <button class="modal-btn">Yes</button>
                 <button class="modal-btn">No</button></div>
         </div>
     `;
+
+    const span = modal.childNodes[1].childNodes[1].childNodes[1];
+    if (item.classList.contains('checked')) {
+        span.classList.add('checked');
+    } else {
+        span.classList.remove('checked');
+    }
+
     document.querySelector('.tasks h2').after(modal);
     document.body.style.overflow = 'hidden';
 }
@@ -189,14 +206,20 @@ function editIncomplicateTask(e) {
 
 }
 
+function deleteAllTasks(e) {
+    e.preventDefault();
+    uncheckedCont.innerHTML = '';
+    checkedCont.innerHTML = '';
+    window.location.search = '';
+    localStorage.clear();
+    checkCompleteSummary();
+}
+
 // Social icons share
 function socialIonsShare() {
     let postUrl = encodeURI(document.location.href);
     let postTitle = encodeURI(`Hello! This is my first project on JavaScript: `);
 
-    shareBtn.addEventListener('click', () => {
-
-    });
     telegramBtn.setAttribute(
         "href", 
         `https://t.me/share/url?url=${postUrl}&title=${postTitle}`
@@ -219,9 +242,98 @@ function socialIonsShare() {
     );
 }
 
+function shareURL(e) {
+    const item = e.target.parentElement;
+    const modal = document.createElement("div");
 
+    modal.classList.add("delete-modal-overlay");
+    modal.innerHTML = `
+        <div class="delete-modal">
+            <input class="url-link" value="${window.location.href}"></input>
+            <button class="modal-btn">Copy link</button>
+        </div>
+    `;
+
+    document.querySelector('.tasks h2').after(modal);
+    document.body.style.overflow = 'hidden';
+    
+    console.dir(item.childNodes[4]);
+    document.querySelector('.modal-btn').addEventListener('click', (e) => {
+        const copyLink = document.querySelector('.url-link');
+        copyLink.select();
+        document.execCommand("copy");
+        item.childNodes[4].remove();
+        document.body.style.overflow = '';
+    });
+}
 
 // localStorage
+function passDataInLocalStorFromURL() {
+    if (window.location.search) {
+        const dataUrl = decodeURIComponent(window.location.search).slice(3, -1).replace(/\s/g, '#');
+        dataUrl.split('{').map(item => {
+            const oldArr = item.replace(/[\"\}]/g, '').replace(/[\,\:]/g, ' ').replace(/(id)/i, '');
+            const newArr = oldArr.replace(/(todo)/i, '').replace(/(checked)/i, '').replace(/(edited)/i, '').split(' ');
+
+            let obj = {};
+            obj.id = newArr[1];
+            obj.todo = newArr[3].replace(/#/g, ' ');
+            if (newArr[5] === 'true') {
+                obj.checked = true;
+            } else {
+                obj.checked = false;
+            }
+            if (newArr[7] === 'true') {
+                obj.edited = true;
+            } else {
+                obj.edited = false;
+            }
+                       
+            let i = todoListArr.length;
+            todoListArr[i] = obj;
+        });
+        
+        localStorage.setItem('todos', JSON.stringify(todoListArr));
+    }
+}
+
+function getDataOnReboot() {
+    passDataInLocalStorFromURL();
+
+    const num = document.createElement("div");
+    num.innerHTML = `
+        <div class="hr"></div>
+        <div class="status">
+            <span class="complete">${complNum}</span>
+            /
+            <span class="incomplete">${incomplNum}</span>
+            (
+            <span class="percentage">${complPercent}%</span>
+            done)
+        </div>
+    `;
+    num.classList.add("summary");
+    addForm.after(num);
+
+    const summary = document.querySelector(".summary");
+    if (complNum == 0 && incomplNum == 0 && summary) {
+        summary.remove();
+    }
+
+    if (todoListArr !== undefined) {
+        todoListArr.forEach((item) => {
+            if (item.checked == true) {
+                createTask(item, item.checked);
+            } else {
+                createTask(item);
+            }
+        });
+    }
+
+    addSummaryClassList();
+    socialIonsShare();
+}
+
 function saveTodosInLocalStorage(todoArr) {
     checkArrayLocalStorage();
     todoListArr.push(todoArr);
@@ -245,6 +357,7 @@ function checkArrayLocalStorage() {
 
 function pushDatasInLocalStorage() {
     localStorage.setItem('todos', JSON.stringify(todoListArr));
+    updateURLFromLocalStorage();
 }
 
 function complNumLocalStorage() {
@@ -261,9 +374,13 @@ function complNumLocalStorage() {
 
 function checkedTaskInLocalStorage(taskId) {
     checkArrayLocalStorage();
-    const checkIndex = todoListArr.findIndex(item => {return item.id == taskId;});
 
-    todoListArr[checkIndex].checked = !todoListArr[checkIndex].checked;
+    todoListArr.forEach(item => {
+        if (item.id == taskId) {
+            item.checked = !item.checked;
+        }
+    });
+
     todoListArr.sort((a, b) => {return a.checked - b.checked;});
     pushDatasInLocalStorage();
 }
@@ -281,39 +398,14 @@ function editedTaskInLocalStorage(taskId, newTodo) {
     pushDatasInLocalStorage();
 }
 
-function getDataOnReboot(e) {
-    if(localStorage.getItem('todos') === null) {
-        todoListArr = [];
-    } else {
-        todoListArr = JSON.parse(localStorage.getItem('todos'));
+function updateURLFromLocalStorage() {
+    const searchCode = encodeURIComponent(localStorage.todos);
 
-        const num = document.createElement("div");
-        num.innerHTML = `
-            <div class="hr"></div>
-            <div class="status">
-                <span class="complete">${complNum}</span>
-                /
-                <span class="incomplete">${incomplNum}</span>
-                (
-                <span class="percentage">${complPercent}%</span>
-                done)
-            </div>
-        `;
-        num.classList.add("summary");
-        addForm.after(num);
+    if (history.pushState) {
+        const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+        const newUrl = `${baseUrl}?${searchCode}`;
+        history.pushState(null, null, newUrl);
     }
-
-    if (complNum == 0 && incomplNum == 0 && document.querySelector(".summary")) {
-        document.querySelector(".summary").remove();
-    }
-
-    todoListArr.forEach((item) => {
-        if (item.checked == true) {
-            createTask(item, item.checked);
-        } else {
-            createTask(item);
-        }
-    });
-    addSummaryClassList();
-    socialIonsShare();
 }
+
+console.log(window.location.href);
