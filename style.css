@@ -66,6 +66,11 @@ h2 {
    font-weight: bold;
 }
 
+.unchecked-container,
+.checked-container {
+   padding: 0.1rem;
+}
+
 .share-btn-url {
    color: #2c3e50c5;
    background-color: rgb(247, 247, 247);
@@ -130,8 +135,6 @@ h2 {
    color: #0088cc;
 }
 
-
-
 .message {
    padding: 20px;
    display: grid;
@@ -149,8 +152,14 @@ h2 {
    grid-gap: 15px;
    justify-items: baseline;
    align-items: center;
-   margin-bottom: 20px;
-   
+   padding: 5px;
+   margin-bottom: 5px;
+   cursor: move;
+}
+
+.task.dragging {
+   background-color: rgb(226, 226, 226);
+   opacity: .5;
 }
 
 .task a {
@@ -191,6 +200,7 @@ h2 {
 .new-task {
    width: calc(100% - 100px);
    font-size: 18px;
+   margin-top: 14px;
    margin-left: 55px;
    padding: 1px 5px;
    border: none;
@@ -255,6 +265,10 @@ h2 {
    z-index: 101;
 }
 
+.delete-modal input{
+   text-align: center;
+}
+
 .display-none {
    display: none;
 }
@@ -273,12 +287,13 @@ h2 {
    padding: 5px;
    border: 1px solid #d3d3d3;
    border-radius: 2px;
-   min-width: 50px;
+   width: 50px;
    font-size: 16px;
    cursor: pointer;
 }
 
 .url-link {
+   justify-self: center;
    margin-bottom: 20px;
    font-size: 16px;
    overflow: hidden;
@@ -334,13 +349,14 @@ footer a{
    }
    
    h2 {
-      margin-block-end: 0.9em;
+      margin-block-end: 0.6em;
+      font-size: 28px;
       grid-column: 1 / 4;
       order: -1;
    }
    
    .share-btn-url {
-      font-size: 17px;
+      font-size: 18px;
       justify-self: start;
       grid-column: 1 / 3;
    }
@@ -354,10 +370,14 @@ footer a{
    
    .share-btn {
       flex-direction: row;
-      padding: 9px 15px 15px 15px;
+      padding: 9px 25px 15px 25px;
       border-radius: 15px 15px 0 0;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
       z-index: 104;
+   }
+
+   .share-btn a i {
+      font-size: 36px;
    }
    
    .message {
@@ -369,12 +389,19 @@ footer a{
       display: grid;
       grid-template-columns: 30px auto 23px;
       grid-gap: 10px;
-      margin-bottom: 15px;
    }
    
    .task a {
       width: 23px;
       height: 23px;
+   }
+
+   .task a:hover {
+      background: none;
+   }
+
+   .task.checked a:hover {
+      background: #7fffd4;
    }
 
    .add-task {
@@ -407,7 +434,7 @@ footer a{
    .copyright {
       position: fixed;
       bottom: 5px;
-      right: 38%;
+      right: 35%;
       z-index: 107;
    }
 

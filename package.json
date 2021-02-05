@@ -1,24 +1,21 @@
 {
   "name": "todo_list",
   "version": "1.0.0",
+  "description": "",
   "main": "script.js",
-  "dependencies": {
-    "array-move": "^3.0.1",
-    "array.prototype.move": "0.0.4"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vodenya/Todo-List-JS.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/vodenya/Todo-List-JS/issues"
   },
-  "homepage": "https://github.com/vodenya/Todo-List-JS#readme",
-  "description": ""
+  "homepage": "https://github.com/vodenya/Todo-List-JS#readme"
 }

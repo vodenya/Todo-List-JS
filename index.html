@@ -7,7 +7,7 @@
     <link rel="shortcut icon" href="/icons/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
     <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+    <script defer src="/src/script.js"></script>
 </head>
 <body>
     <header>
@@ -44,11 +44,11 @@
             <div class="message">
                 <div>You don't have tasks to do.</div>
             </div>
-            <div class="unchecked-container"></div>
+            <div data-container class="unchecked-container"></div>
             <form class="add-task" method="POST">
                 <input type="text" class="new-task" placeholder="New task...">
             </form>
-            <div class="checked-container"></div>
+            <div data-container class="checked-container checked"></div>
         </div>
     </div>
     <footer>
