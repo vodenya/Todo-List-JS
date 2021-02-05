@@ -314,6 +314,7 @@ function updateURLFromLocalStorage() {
     const newUrl = `${baseUrl}?${searchCode}`;
     history.pushState(null, null, newUrl);
   }
+  socialIonsShare();
 }
 
 // ===== localStorage
