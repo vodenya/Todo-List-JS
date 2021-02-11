@@ -12,7 +12,8 @@ const shareBtn = document.querySelector(".share-btn-url"),
   facebookBtn = document.querySelector(".facebook-btn"),
   linkedinBtn = document.querySelector(".linkedin-btn"),
   whatsappBtn = document.querySelector(".whatsapp-btn"),
-  twitterBtn = document.querySelector(".twitter-btn");
+  twitterBtn = document.querySelector(".twitter-btn"),
+  socialBtn = document.querySelectorAll(".share-btn");
 
 let todoListArr = [],
   incomplNum = 0,
@@ -33,10 +34,9 @@ function addTodo(e) {
 
   if (addInput.value) {
     let obj = {};
-    obj.id = new Date().getTime();
+    obj.id = new Date().getTime() - 15.2e11;
     obj.todo = addInput.value;
     obj.checked = false;
-    obj.edited = false;
 
     let i = todoListArr.length;
     todoListArr[i] = obj;
@@ -237,31 +237,29 @@ function deleteAllTasks(e) {
 
 // Social icons-buttons share
 function socialIonsShare() {
-  shortenLinkBitly().then((id) => {
-    let postUrl = encodeURI(id);
-    let postTitle = encodeURI(`Hello! Look at the todo list: `);
+  let postUrl = encodeURI(window.location.origin);
+  let postTitle = encodeURI(`Hello! Create your todo list: `);
 
-    telegramBtn.setAttribute(
-      "href",
-      `https://t.me/share/url?url=${postUrl}&title=${postTitle}`
-    );
-    facebookBtn.setAttribute(
-      "href",
-      `https://www.facebook.com/sharer.php?u=${postUrl}`
-    );
-    linkedinBtn.setAttribute(
-      "href",
-      `https://www.linkedin.com/shareArticle?url=${postUrl}&title=${postTitle}`
-    );
-    whatsappBtn.setAttribute(
-      "href",
-      `https://api.whatsapp.com/send?text=${postTitle} ${postUrl}`
-    );
-    twitterBtn.setAttribute(
-      "href",
-      `https://twitter.com/share?url=${postUrl}&text=${postTitle}`
-    );
-  });
+  telegramBtn.setAttribute(
+    "href",
+    `https://t.me/share/url?url=${postUrl}&title=${postTitle}`
+  );
+  facebookBtn.setAttribute(
+    "href",
+    `https://www.facebook.com/sharer.php?u=${postUrl}`
+  );
+  linkedinBtn.setAttribute(
+    "href",
+    `https://www.linkedin.com/shareArticle?url=${postUrl}&title=${postTitle}`
+  );
+  whatsappBtn.setAttribute(
+    "href",
+    `https://api.whatsapp.com/send?text=${postTitle} ${postUrl}`
+  );
+  twitterBtn.setAttribute(
+    "href",
+    `https://twitter.com/share?url=${postUrl}&text=${postTitle}`
+  );
 }
 
 function shareURL(e) {
@@ -306,54 +304,39 @@ async function shortenLinkBitly() {
   return id;
 }
 
+// ===== localStorage
 function updateURLFromLocalStorage() {
-  const searchCode = encodeURIComponent(localStorage.todos);
+  const encodeSymbols = localStorage.todos
+    .replace(/("todo")/g, "#$")
+    .replace(/("checked")/g, "&!")
+    .replace(/("id")/g, "%?")
+    .replace(/(true)/g, "@!")
+    .replace(/(false)/g, "!@");
+  const encodeStr = Array.from(pako.gzip(encodeSymbols))
+    .map((a) => a.toString(16).padStart(2, "0"))
+    .join("");
 
   if (history.pushState) {
     const baseUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-    const newUrl = `${baseUrl}?${searchCode}`;
+    const newUrl = `${baseUrl}?${encodeStr}`;
     history.pushState(null, null, newUrl);
   }
-  socialIonsShare();
 }
 
-// ===== localStorage
 function passDataInLocalStorFromURL() {
-  if (window.location.search.length > 15) {
-    const dataUrl = decodeURIComponent(window.location.search)
-      .slice(3, -1)
-      .replace(/\s/g, "#");
-
-    dataUrl.split("{").map((item) => {
-      const oldArr = item
-        .replace(/[\"\}]/g, "")
-        .replace(/[\,\:]/g, " ")
-        .replace(/(id)/i, "");
-      const newArr = oldArr
-        .replace(/(todo)/i, "")
-        .replace(/(checked)/i, "")
-        .replace(/(edited)/i, "")
-        .split(" ");
-
-      let obj = {};
-      obj.id = +newArr[1];
-
-      obj.todo = newArr[3].replace(/#/g, " ");
-      if (newArr[5] === "true") {
-        obj.checked = true;
-      } else {
-        obj.checked = false;
-      }
-      if (newArr[7] === "true") {
-        obj.edited = true;
-      } else {
-        obj.edited = false;
-      }
-
-      let i = todoListArr.length;
-      todoListArr[i] = obj;
-    });
-
+  if (window.location.search.length > 10) {
+    const urlSearch = window.location.search.slice(1);
+    const charData = new Uint8Array(
+      urlSearch.match(/.{1,2}/g).map((a) => parseInt(a, 16))
+    );
+    const decodeStr = pako.inflate(charData, { to: "string" });
+    const decodeSymbols = decodeStr
+      .replace(/(#\$)/g, '"todo"')
+      .replace(/(@!)/g, "true")
+      .replace(/(!@)/g, "false")
+      .replace(/(&!)/g, '"checked"')
+      .replace(/(%\?)/g, '"id"');
+    todoListArr = JSON.parse(decodeSymbols);
     localStorage.setItem("todos", JSON.stringify(todoListArr));
   } else {
     localStorage.clear();
@@ -373,7 +356,7 @@ function getDataOnPageReload() {
       (
       <span class="percentage">${complPercent}%</span>
       done)
-    </div>    
+    </div>
   `;
   num.classList.add("summary");
   addForm.after(num);
@@ -383,7 +366,7 @@ function getDataOnPageReload() {
     summary.remove();
   }
 
-  if (todoListArr !== undefined) {
+  if (todoListArr) {
     todoListArr.forEach((item) => {
       if (item.checked == true) {
         createTask(item, item.checked);
@@ -472,7 +455,7 @@ function editedTaskInLocalStorage(taskId, newTodo) {
       return;
     }
     todoListArr[index].todo = newTodo;
-    todoListArr[index].edited = true;
+    todoListArr[index].edited = 1;
   });
   pushDataInLocalStorage();
 }

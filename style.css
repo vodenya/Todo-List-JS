@@ -9,7 +9,7 @@ a,a:visited{text-decoration: none;}
 a:hover{text-decoration: none;}
 ul li{list-style: none;}
 img{vertical-align: top;}
-h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: inherit;} 
+h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: inherit;}
 
 body {
    height: 1vh;
@@ -186,7 +186,7 @@ h2 {
 
 .close-image img {
    display: block;
-   height: 20px;  
+   height: 20px;
    width: 19px;
    background-color: rgb(247, 247, 247);
    pointer-events: none;
@@ -330,31 +330,32 @@ footer a{
 /* Mobile */
 @media (max-width: 500px) {
    .container {
-      width: 85%;
-      font-size: 16px;
+      width: 100%;
+      margin-top: 15%;
       margin-bottom: 110px;
       border-radius: 12px;
+      font-size: 16px;
    }
 
    .header-container {
       grid-template-columns: 100px auto 100px;
       margin-bottom: 5px;
    }
-   
+
    .delete-button {
       width: 80px;
       padding: 2px;
       font-size: 15px;
       justify-self: end;
    }
-   
+
    h2 {
       margin-block-end: 0.6em;
       font-size: 28px;
       grid-column: 1 / 4;
       order: -1;
    }
-   
+
    .share-btn-url {
       font-size: 18px;
       justify-self: start;
@@ -367,7 +368,7 @@ footer a{
       bottom: 0;
       z-index: 103;
    }
-   
+
    .share-btn {
       flex-direction: row;
       padding: 9px 25px 15px 25px;
@@ -379,18 +380,18 @@ footer a{
    .share-btn a i {
       font-size: 36px;
    }
-   
+
    .message {
       padding: 10px 0 15px 0;
    }
-   
+
    /* Input, task */
    .task {
       display: grid;
       grid-template-columns: 30px auto 23px;
       grid-gap: 10px;
    }
-   
+
    .task a {
       width: 23px;
       height: 23px;
@@ -408,7 +409,7 @@ footer a{
       display: grid;
       grid-template-columns: auto;
    }
-   
+
    .new-task {
       width: calc(100% - 40px);
       font-size: 16px;
